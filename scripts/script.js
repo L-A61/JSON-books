@@ -15,6 +15,7 @@ let listAuthors = document.getElementById("listAuthors");
 let listCategories = document.getElementById("listCategories");
 let listBooks = document.getElementById("booksList");
 
+// Écoute d'évenement pour les deux listes déroulantes
 listAuthors.addEventListener("change", chargeByAuthor);
 listCategories.addEventListener("change", chargeByCategory);
 
@@ -43,44 +44,52 @@ function createBooks(_books) {
             if (authorsList.indexOf(author) === -1) {
                 authorsList.push(author);
             }
+            // Verification que la catégorie n'est pas dans la liste des catégorie
             if (categoriesList.indexOf(category) === -1) {
-                categoriesList.push(category)
+                categoriesList.push(category);
             }
         }
     }
+    // La liste de livre, est listes déroulantes sont trier par ordre alphabetique
     booksList.sort();
     authorsList.sort();
     categoriesList.sort();
 
+    // Importe le tableau des auteurs dans la liste déroulante pour auteur
     for (let j = 0; j < authorsList.length; j++) {
         let option = document.createElement("option");
         option.value = authorsList[j];
         option.innerText = authorsList[j];
         listAuthors.appendChild(option);
     }
+
+    // Importe le tableau des catégories dans la liste déroulante pour catégorie
     for (let k = 0; k < categoriesList.length; k++) {
-        let option2 = document.createElement("option");
-        option2.value = categoriesList[k];
-        option2.innerText = categoriesList[k];
-        listCategories.appendChild(option2);
+        let option = document.createElement("option");
+        option.value = categoriesList[k];
+        option.innerText = categoriesList[k];
+        listCategories.appendChild(option);
     }
 
-    console.log(authorsList);
-    console.log(categoriesList)
+    // Appel la fonction showBooks avec pour argument la liste créer dans la fonction createBooks
     showBooks(booksList);
 }
 
+// Apparition des livres dans le HTML
 function showBooks(_books) {
     listBooks.innerHTML = "";
 
     for (let k = 0; k < _books.length; k++) {
+        // Créer une div pour chaque livre avec pour class (bootstrap) card 
         let book = document.createElement("div");
         book.setAttribute("class", "card");
 
+        // Si l'image n'est pas présent, utilise l'image contenu dans l'URL comme remplacement
         if (_books[k].thumbnailUrl == undefined || _books[k].thumbnailUrl == null) {
             _books[k].thumbnailUrl = "https://p1.storage.canalblog.com/14/48/1145642/91330992_o.png";
         }
 
+        // DOM titre
         let titre;
         if (_books[k].title.length > 20) {
             titre = _books[k].title.substring(0, 20) + " (...)";
@@ -88,6 +97,7 @@ function showBooks(_books) {
             titre = _books[k].title;
         }
 
+        // Description & Courte Description
         let description;
         let shortDescription;
 
@@ -100,17 +110,20 @@ function showBooks(_books) {
         } else {
             shortDescription = _books[k].shortDescription;
         }
+
         if (_books[k].longDescription == undefined || _books[k].longDescription == null) {
-            description = _books[k].longDescription;
-        } else {
             description = "Pas de description";
+        } else {
+            description = _books[k].longDescription;
         }
+
         if (_books[k].shortDescription > 100) {
             shortDescription = _books[k].shortDescription.substring(0, 100) + " (...)";
         } else {
             shortDescription = shortDescription;
         }
 
+        // Date de publication
         let datePubli;
         try {
             datePubli = new Date(_books[k].publishedDate.dt_txt).toLocaleDateString("fr-FR", options);
@@ -118,23 +131,53 @@ function showBooks(_books) {
             datePubli = " Pas de date de publication ";
         }
 
-        // TODO: Nombre de page, et ISBN
+        // ISBN
+        let ISBN;
+        ISBN = _books[k].isbn;
 
+        // Nombre de page
+        let pageNb;
+        pageNb = _books[k].pageCount;
+
+        if (pageNb == 0) {
+            pageNb = "Inconnue";
+        }
+
+        // DOM Ensemble
+        // Image
         book.innerHTML =
         '<img src="' +
         _books[k].thumbnailUrl +
         '" />' +
+        
+        // Titre
         '<h1 class="booktitle"><span class="infobulle" title="' +
         _books[k].title +
         '">' +
         titre +
         "</span></h1>" +
-        "<h4>" +
+        
+        // ISBN
+        "<h5>"+
+        ISBN+
+        "</h5>"+
+
+        // Nombre de Page
+        "<h5>Pages: "+
+        pageNb+
+        "</h5>"+
+        
+        // Date de publication
+        "<h4>"+
         datePubli +
         "</h4>" +
+
+        // Description
         '<h5> <span class="infobulle" title="' +
         description +
         '">' +
+
+        // Description (courte)
         shortDescription +
         '</span></h5>';
 
@@ -165,7 +208,7 @@ function chargeByAuthor() {
     showBooks(bookByAuthor);
 }
 
-// Fonction lors du changement de catégorie dans la liste déroulante (A faire)
+// Fonction lors du changement de catégorie dans la liste déroulante
 function chargeByCategory() {
     let strCategory = listCategories.options[listCategories.selectedIndex].text;
     console.log(strCategory);
