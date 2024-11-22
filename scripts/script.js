@@ -89,7 +89,7 @@ function showBooks(_books) {
             _books[k].thumbnailUrl = "https://p1.storage.canalblog.com/14/48/1145642/91330992_o.png";
         }
 
-        // DOM titre
+        // Titre
         let titre;
         if (_books[k].title.length > 20) {
             titre = _books[k].title.substring(0, 20) + " (...)";
