@@ -24,7 +24,7 @@ window.addEventListener("DOMContentLoaded", jsonOnLoad)
 
 // Fonction qui appelle le chargement du JSON
 function jsonOnLoad() {
-    fetch("data/books.json")
+    fetch("./data/books.json")
     .then((response) => 
         response.json())
     .then((data) => {
