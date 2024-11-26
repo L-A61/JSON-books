@@ -8,16 +8,22 @@ let options = {
 let booksList = new Array();
 let authorsList = new Array();
 let categoriesList = new Array();
+let descList = new Array();
 
 
 // Sélection des ids la liste déroulante des auteurs, catégories, et la div vide pour la liste des livres
 let listAuthors = document.getElementById("listAuthors");
 let listCategories = document.getElementById("listCategories");
+let listDesc = document.getElementById("listDesc")
 let listBooks = document.getElementById("booksList");
+
 
 // Écoute d'évenement pour les deux listes déroulantes
 listAuthors.addEventListener("change", chargeByAuthor);
 listCategories.addEventListener("change", chargeByCategory);
+
+// Écoute d'évenement pour la barre de recherche
+listDesc.addEventListener("change", chargeByDescription);
 
 // On créé l'écouteur d'événement sur le load de notre page
 window.addEventListener("DOMContentLoaded", jsonOnLoad)
@@ -25,11 +31,11 @@ window.addEventListener("DOMContentLoaded", jsonOnLoad)
 // Fonction qui appelle le chargement du JSON
 function jsonOnLoad() {
     fetch("./data/books.json")
-    .then((response) => 
-        response.json())
-    .then((data) => {
-        createBooks(data)
-    })
+        .then((response) =>
+            response.json())
+        .then((data) => {
+            createBooks(data)
+        })
 }
 
 // Fonction qui affiche les livres mais aussi qui créera les listes déroulantes
@@ -111,6 +117,9 @@ function showBooks(_books) {
             shortDescription = _books[k].shortDescription;
         }
 
+
+
+        
         if (_books[k].longDescription == undefined || _books[k].longDescription == null) {
             description = "Pas de description";
         } else {
@@ -146,40 +155,40 @@ function showBooks(_books) {
         // DOM Ensemble
         // Image
         book.innerHTML =
-        '<img src="' +
-        _books[k].thumbnailUrl +
-        '" />' +
-        
-        // Titre
-        '<h1 class="booktitle"><span class="infobulle" title="' +
-        _books[k].title +
-        '">' +
-        titre +
-        "</span></h1>" +
-        
-        // ISBN
-        "<h5>"+
-        ISBN+
-        "</h5>"+
+            '<img src="' +
+            _books[k].thumbnailUrl +
+            '" />' +
 
-        // Nombre de Page
-        "<h5>Pages: "+
-        pageNb+
-        "</h5>"+
-        
-        // Date de publication
-        "<h4>"+
-        datePubli +
-        "</h4>" +
+            // Titre
+            '<h1 class="booktitle"><span class="infobulle" title="' +
+            _books[k].title +
+            '">' +
+            titre +
+            "</span></h1>" +
 
-        // Description
-        '<h5> <span class="infobulle" title="' +
-        description +
-        '">' +
+            // ISBN
+            "<h5>" +
+            ISBN +
+            "</h5>" +
 
-        // Description (courte)
-        shortDescription +
-        '</span></h5>';
+            // Nombre de Page
+            "<h5>Pages: " +
+            pageNb +
+            "</h5>" +
+
+            // Date de publication
+            "<h4>" +
+            datePubli +
+            "</h4>" +
+
+            // Description
+            '<h5> <span class="infobulle" title="' +
+            description +
+            '">' +
+
+            // Description (courte)
+            shortDescription +
+            '</span></h5>';
 
         listBooks.appendChild(book);
     }
@@ -230,3 +239,68 @@ function chargeByCategory() {
     bookByCategory.sort();
     showBooks(bookByCategory);
 }
+
+// Récupère la valeur de listDesc, et filtre la liste des livres selon si la description contient la valeur de listDesc
+function chargeByDescription() {
+    let strDesc = listDesc.value.toLowerCase();
+    console.log(strDesc);
+
+    // Création d'un tableau dans la variable bookByDesc
+    let bookByDesc = new Array();
+
+    // Si la valeur de strDesc est vide, on affiche tout les livres, 
+    if (strDesc === "") {
+        showBooks(booksList);
+    
+    // sinon on fait une boucle sur l'ensemble des livres
+    } else {
+        for (let n = 0; n < booksList.length; n++) {
+            // la variable book représent l'index de la boucle de booksList
+            let book = booksList[n];   
+
+            // Déclaration des variables shortDesc et longDesc, vide pour le moment
+            let shortDesc = "";
+            let longDesc = "";
+
+            // Stock toutes les descriptions courtes dans la variable shortDesc en minuscule
+            if (book.shortDescription) {
+                shortDesc = book.shortDescription.toLowerCase();
+            }
+
+            // Stock toutes les descriptions longues dans la variable longDesc en minuscule
+            if (book.longDescription) {
+                longDesc = book.longDescription.toLowerCase();
+            }
+
+            // Si la variable shortDesc ou longDesc contient la valeur de strDesc, on inclus le livre contenant la description dans le tableau bookByDesc 
+            if (shortDesc.includes(strDesc) || longDesc.includes(strDesc)) {
+                bookByDesc.push(book);
+            }
+        }
+        // Une fois sortie de la boucle, on affiche le tableau bookByDesc
+        showBooks(bookByDesc);
+    }
+}
+
+/*
+    let filterDesc = booksList.filter((book) => {
+        if (book.shortDescription !== "") {
+            let shortDesc = book.shortDescription.toLowerCase()
+            console.log("Short Desc: "+ shortDesc)
+            bookByDesc.push(shortDesc)
+        } else {
+            book.shortDescription = "";
+        }
+
+        if (book.longDescription !== "") {
+            let longDesc = book.longDescription.toLowerCase()
+            console.log(longDesc)
+        } else {
+            book.longDescription = "";
+        }
+    //    bookByDesc.push()
+    return book.shortDesc.includes(strDesc) || book.longDesc.includes(strDesc);
+    }
+    );
+    showBooks(filterDesc);
+    */
